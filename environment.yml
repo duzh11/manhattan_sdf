@@ -1,0 +1,38 @@
+name: manhattan
+channels:
+  - pytorch
+  - plotly
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.0.3
+  - numpy=1.20.3
+  - pip=21.2.4
+  - python=3.7.10
+  - torchvision=0.8.2
+  - pip:
+    - addict==2.4.0
+    - imgaug==0.4.0
+    - ipdb==0.13.9
+    - ipython==7.27.0
+    - jedi==0.18.0
+    - jupyter==1.0.0
+    - matplotlib==3.4.3
+    - open3d==0.9.0.0
+    - opencv-python==4.5.3.56
+    - plyfile==0.7.4
+    - prefetch-generator==1.0.1
+    - pyglet==1.5.21
+    - pyopengl==3.1.0
+    - pyrender==0.1.45
+    - pyyaml==5.4.1
+    - scikit-image==0.19.2
+    - scikit-learn==1.0
+    - scipy==1.7.1
+    - tensorboard==2.6.0
+    - tensorboardX==2.4
+    - termcolor==1.1.0
+    - torch==1.6.0
+    - tqdm==4.62.2
+    - trimesh==3.9.29
