@@ -1,5 +1,5 @@
 task: manhattan_sdf
-exp_name: 'deeplab40detacha_0616'
+exp_name: 'deeplab40detach_0025'
 gpus: [0]
 
 train_dataset_module: lib.datasets.scannet
@@ -8,7 +8,7 @@ network_module: lib.networks.network
 trainer_module: lib.train.trainers.manhattan_sdf
 evaluator_module: lib.evaluators.mesh
 
-output_mesh: 'scene00616_00.ply'
+output_mesh: 'scene0025_00.ply'
 record_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/record'
 result_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/result'
 trained_model_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/trained_model'
@@ -42,32 +42,32 @@ model:
     speed_factor: 10.0
 
 train_dataset:
-    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet'
+    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'train'
-    scene: '0616_00'
+    scene: '0025_00'
     near: 0.0
     far: 2.0
 
 test_dataset:
-    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet'
+    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'test'
-    scene: '0616_00'
+    scene: '0025_00'
     near: 0.0
     far: 2.0
-    scale: 0.38626
-    offset: [2.84253, 2.14299, 1.38729]
-
+    scale: 0.50787
+    offset: [3.38405, 2.95615, 1.52066]
+ 
 sample:
     N_samples: 128
     N_importance: 64
-    rayschunk: 65536
-    netchunk: 1048576
+    rayschunk: 65536 #65536
+    netchunk: 1048576 #1048576
     max_upsample_steps: 6
     max_bisection_steps: 10
     epsilon: 0.1
   
 train:
-    N_rays: 512
+    N_rays: 512 #1024
     batch_size: 1
     lr: 0.0005
     weight_decay: 0.

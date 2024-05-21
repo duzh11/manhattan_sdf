@@ -2,7 +2,6 @@ import numpy as np
 import open3d as o3d
 from sklearn.neighbors import KDTree
 
-
 def nn_correspondance(verts1, verts2):
     indices = []
     distances = []
@@ -14,7 +13,6 @@ def nn_correspondance(verts1, verts2):
     distances = distances.reshape(-1)
 
     return distances
-
 
 class Evaluator:
     def evaluate(self, mesh_pred, mesh_trgt, threshold=.05, down_sample=.02):

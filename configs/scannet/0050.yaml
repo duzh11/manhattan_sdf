@@ -1,5 +1,5 @@
 task: manhattan_sdf
-exp_name: 'test1_0050'
+exp_name: Mask2Formera40detach_0050
 gpus: [0]
 
 train_dataset_module: lib.datasets.scannet
@@ -32,7 +32,7 @@ model:
         fr_view: -1
         weight_norm: True
     semantic:
-        semantic_class: 3
+        semantic_class: 40
         net_depth: 4
         skips: []
         fr_pos: -1
@@ -55,20 +55,20 @@ test_dataset:
     near: 0.0
     far: 2.0
     scale: 0.40543
-    offset: [4.24910, 2.30138, 1.15986]
+    offset: [4.2491, 2.301382, 1.159861]
  
 sample:
     N_samples: 128
     N_importance: 64
-    rayschunk: 2048 #65536
-    netchunk:  4096 #1048576
+    rayschunk: 65536
+    netchunk:  1048576
     max_upsample_steps: 6
     max_bisection_steps: 10
     epsilon: 0.1
   
 train:
-    N_rays: 256 #1024
-    batch_size: 1 #1
+    N_rays: 512 #1024
+    batch_size: 1
     lr: 0.0005
     weight_decay: 0.
     epoch: 50
@@ -80,7 +80,7 @@ train:
 
 loss:
     rgb_weight: 1.0
-    depth_weight: 0.0
+    depth_weight: 1.0
     depth_weight_decay: 0.5
     depth_weight_decay_epochs: [5, ]
     depth_loss_clamp: 0.5
@@ -90,11 +90,11 @@ loss:
     ce_weight: 1.0
     ce_weight_decay: 0.5
     ce_weight_decay_epochs: [1, 5]
-    non_plane_weight: 0.2
+    non_plane_weight: 1.0
     eikonal_weight: 0.1
 
 ep_iter: 1000
-save_ep: 1
-eval_ep: 1
-save_latest_ep: 1
-log_interval: 10
+save_ep: 5
+eval_ep: 5
+save_latest_ep: 5
+log_interval: 1

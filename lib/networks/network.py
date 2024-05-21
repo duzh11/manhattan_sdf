@@ -126,6 +126,7 @@ def volume_render(
 
         rgb_map = torch.sum(tau_i[..., None] * radiances[..., :-1, :], dim=-2)
         semantic_map = torch.sum(tau_i[..., None] * semantics[..., :-1, :], dim=-2)
+        normal_map = torch.sum(tau_i[..., None] * nablas[..., :-1, :], dim=-2)
         
         distance_map = torch.sum(tau_i / (tau_i.sum(-1, keepdim=True)+1e-10) * d_all[..., :-1], dim=-1)
         depth_map = distance_map / depth_ratio
@@ -142,6 +143,7 @@ def volume_render(
         surface_points = rays_o + rays_d * distance_map[..., None]
         _, surface_normals, _ = model.sdf_net.forward_with_nablas(surface_points.detach())
         ret_i['surface_normals'] = surface_normals
+        ret_i['volume_normals'] = normal_map
 
         # normals_map = F.normalize(nablas, dim=-1)
         # N_pts = min(tau_i.shape[-1], normals_map.shape[-2])

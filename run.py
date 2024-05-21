@@ -92,7 +92,6 @@ def run_render():
     network.eval()
     data_loader = make_data_loader(cfg, is_train=False)
 
-    
 if __name__ == '__main__':
     args.type='mesh_extract'
     globals()['run_' + args.type]()

@@ -22,7 +22,6 @@ def train(cfg, network):
     optimizer = make_optimizer(cfg, network)
     scheduler = make_lr_scheduler(cfg, optimizer)
     recorder = make_recorder(cfg)
-
     begin_epoch = load_model(
         network,
         optimizer,
@@ -85,9 +84,9 @@ def test(cfg, network):
         resume=cfg.resume,
         epoch=cfg.test.epoch
     )
+    # trainer.val_from_mesh(epoch)
+    # trainer.val(epoch, data_loader=test_loader)
     trainer.render(epoch, data_loader=test_loader)
-    # trainer.val(epoch, data_loader=test_loader, evaluate_mesh=True, evaluator=evaluator)
-
 
 def synchronize():
     """

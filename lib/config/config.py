@@ -109,7 +109,7 @@ def setup_seed(seed):
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--cfg_file", default="configs/scannet/0050.yaml", type=str)
-parser.add_argument('--test', action='store_true', dest='test', default=False)
+parser.add_argument('--test', action='store_true', default=True)
 parser.add_argument("--type", type=str, default="evaluate")
 parser.add_argument('--det', type=str, default='')
 parser.add_argument('--local_rank', type=int, default=0)

@@ -1,5 +1,5 @@
 task: manhattan_sdf
-exp_name: 'test3_0050'
+exp_name: 'deeplab40detach_0050'
 gpus: [0]
 
 train_dataset_module: lib.datasets.scannet
@@ -9,10 +9,10 @@ trainer_module: lib.train.trainers.manhattan_sdf
 evaluator_module: lib.evaluators.mesh
 
 output_mesh: 'scene0050_00.ply'
-record_dir: '/home/home/raid/zhenhua2023/Manhattansdf/exp/record'
-result_dir: '/home/home/raid/zhenhua2023/Manhattansdf/exp/result'
-trained_model_dir: '/home/home/raid/zhenhua2023/Manhattansdf/exp/trained_model'
-trained_config_dir: '/home/home/raid/zhenhua2023/Manhattansdf/exp/trained_config'
+record_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/record'
+result_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/result'
+trained_model_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/trained_model'
+trained_config_dir: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/exp/trained_config'
 
 model:
     net_width: 256
@@ -42,14 +42,14 @@ model:
     speed_factor: 10.0
 
 train_dataset:
-    data_root: '/home/home/raid/zhenhua2023/Manhattansdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
+    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'train'
     scene: '0050_00'
     near: 0.0
     far: 2.0
 
 test_dataset:
-    data_root: '/home/home/raid/zhenhua2023/Manhattansdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
+    data_root: '/raid/duzhenhua/3Dv_Reconstruction/Manhattan_sdf/data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'test'
     scene: '0050_00'
     near: 0.0
@@ -94,7 +94,7 @@ loss:
     eikonal_weight: 0.1
 
 ep_iter: 1000
-save_ep: 10
-eval_ep: 10
-save_latest_ep: 10
+save_ep: 5
+eval_ep: 5
+save_latest_ep: 5
 log_interval: 1

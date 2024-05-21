@@ -8,6 +8,7 @@ from lib.config import cfg
 import pyrender
 import os
 import open3d as o3d
+import lib.train.trainers.utils_colour as utils_colour
 
 os.environ['PYOPENGL_PLATFORM'] = 'egl'
 
@@ -97,12 +98,17 @@ def transform(mesh, scale, offset):
     return mesh
 
 
-def extract_mesh(sdf_net, level=0.0, N=512, chunk=100000):
+def extract_mesh(sdf_net, 
+                 level=0.0, 
+                 N=512, 
+                 chunk=100000,
+                 seg_mesh = False,
+                 semantic_net = None):
     s = cfg.model.bounding_radius * 2
     voxel_grid_origin = [-s/2., -s/2., -s/2.]
     volume_size = [s, s, s]
 
-    overall_index = np.arange(0, N ** 3, 1).astype(np.int)
+    overall_index = np.arange(0, N ** 3, 1).astype(int)
     xyz = np.zeros([N ** 3, 3])
 
     xyz[:, 2] = overall_index % N
@@ -129,4 +135,27 @@ def extract_mesh(sdf_net, level=0.0, N=512, chunk=100000):
     vertices += voxel_grid_origin
     mesh = trimesh.Trimesh(vertices=vertices, faces=faces)
 
-    return mesh
+    surface_label = []
+    semmesh = mesh
+    if seg_mesh:
+        vertices_tensor = torch.FloatTensor(vertices.copy()).reshape([-1, 3]).cuda()
+        for i in tqdm(range(0, vertices_tensor.shape[0], chunk), desc='Querying Surface Label'):
+            sdf_i, nablas_i, geometry_feature_i = sdf_net.forward_with_nablas(vertices_tensor[i:i+chunk])
+            semantics = semantic_net.forward(vertices_tensor[i:i+chunk], geometry_feature_i)
+            surface_label.append(semantics.argmax(axis=1).cpu().numpy())
+        surface_label = np.concatenate(surface_label, axis=0)
+        
+        semantic_class=cfg.model.semantic.semantic_class
+        if semantic_class==3:
+            colour_map_np = utils_colour.nyu3_colour_code
+        elif semantic_class==40 or semantic_class==41:
+            colour_map_np = utils_colour.nyu40_colour_code
+            surface_label = surface_label + 1
+        
+        surface_labels_vis = colour_map_np[(surface_label)].astype(np.uint8)
+        semmesh = trimesh.Trimesh(vertices=vertices, 
+                                faces=faces, 
+                                vertex_colors = surface_labels_vis,
+                                process=False)
+        
+    return mesh, semmesh, surface_label

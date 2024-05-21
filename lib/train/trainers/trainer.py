@@ -5,7 +5,9 @@ import os
 import numpy as np
 import open3d as o3d
 import cv2
+import trimesh
 from tqdm import tqdm
+from glob import glob
 from torch.utils.data import DataLoader
 from torch.nn.parallel import DistributedDataParallel
 import lib.train.trainers.utils_colour as utils_colour
@@ -129,14 +131,29 @@ class Trainer(object):
                 recorder.update_image_stats(image_stats)
                 recorder.record('train')
 
-    def val(self, epoch, save_mesh=True, evaluate_mesh=False, data_loader=None, evaluator=None, recorder=None):
+    def val(self, 
+            epoch, 
+            save_mesh=True, 
+            evaluate_mesh=False, 
+            data_loader=None, 
+            evaluator=None, 
+            recorder=None):
         self.network.eval()
         torch.cuda.empty_cache()
         # mesh
-        mesh = extract_mesh(self.network.net.model.sdf_net)
+        mesh, sem_mesh, surface_label = extract_mesh(self.network.net.model.sdf_net,
+                                                    semantic_net = self.network.net.model.semantic_net,
+                                                    seg_mesh = True)
+        
         if save_mesh and not evaluate_mesh:
+            mesh = transform(mesh, cfg.test_dataset.scale, cfg.test_dataset.offset)
+            sem_mesh = transform(sem_mesh, cfg.test_dataset.scale, cfg.test_dataset.offset)
+            
             os.makedirs(f'{cfg.result_dir}/', exist_ok=True)
             mesh.export(f'{cfg.result_dir}/{epoch}.ply')
+            sem_mesh.export(f'{cfg.result_dir}/{epoch}_sem.ply')
+            np.savez(f'{cfg.result_dir}/semantic_surface.npz', surface_label)
+        
         if evaluate_mesh:
             assert data_loader is not None
             assert evaluator is not None
@@ -145,6 +162,47 @@ class Trainer(object):
             mesh_gt = o3d.io.read_triangle_mesh(f'{cfg.test_dataset.data_root}/{cfg.test_dataset.scene}/gt.obj')
             evaluate_result = evaluator.evaluate(mesh, mesh_gt)
             print(evaluate_result)
+    
+    def val_from_mesh(self, 
+                    epoch,
+                    from_mesh_dir=None):
+        self.network.eval()
+        torch.cuda.empty_cache()
+        # mesh
+        if from_mesh_dir is None:
+            from_mesh_dir = glob(f'{cfg.result_dir}/*_TSDF.ply')[-1]
+        from_mesh = trimesh.load(from_mesh_dir, process=False)
+        from_mesh_vertices = from_mesh.vertices
+        vertices = (from_mesh_vertices-cfg.test_dataset.offset)*cfg.test_dataset.scale
+
+        ### copy from mesh_utils.py
+        chunk=100000
+        surface_label = []
+        sdf_net = self.network.net.model.sdf_net
+        semantic_net = self.network.net.model.semantic_net
+
+        vertices_tensor = torch.FloatTensor(vertices.copy()).reshape([-1, 3]).cuda()
+        for i in tqdm(range(0, vertices_tensor.shape[0], chunk), desc='Querying Surface Label of exsiting mesh'):
+            sdf_i, nablas_i, geometry_feature_i = sdf_net.forward_with_nablas(vertices_tensor[i:i+chunk])
+            semantics = semantic_net.forward(vertices_tensor[i:i+chunk], geometry_feature_i)
+            surface_label.append(semantics.argmax(axis=1).cpu().numpy())
+        surface_label = np.concatenate(surface_label, axis=0)
+
+        semantic_class=cfg.model.semantic.semantic_class
+        if semantic_class==3:
+            colour_map_np = utils_colour.nyu3_colour_code
+        elif semantic_class==40 or semantic_class==41:
+            colour_map_np = utils_colour.nyu40_colour_code
+            surface_label = surface_label + 1
+        
+        surface_labels_vis = colour_map_np[(surface_label)].astype(np.uint8)
+        tomesh = trimesh.Trimesh(vertices=from_mesh_vertices, 
+                                faces=from_mesh.faces, 
+                                vertex_colors = surface_labels_vis,
+                                process=False)
+        
+        tomesh.export(f'{cfg.result_dir}/{epoch}_TSDF_sem.ply')
+        np.savez(f'{cfg.result_dir}/semantic_surface_TSDF.npz', surface_label)
     
     def render(self, epoch, data_loader):
         self.network.eval()
@@ -159,7 +217,7 @@ class Trainer(object):
         # render
         for iteration, batch in enumerate(data_loader):
             print(f'render image: {iteration}')
-            for key in ['rgb', 'depth', 'semantic']:
+            for key in ['rgb', 'depth', 'semantic', 'surface_normals', 'volume_normals']:
                 imgs_render[key] = []
             # render
             rays=batch['rays'][0]
@@ -170,6 +228,7 @@ class Trainer(object):
                 for key in imgs_render:
                     imgs_render[key].append(render_output[key].detach().cpu().numpy())
                 del render_output
+            
             # save image
             H, W=480, 640
             for key in imgs_render:
@@ -178,7 +237,7 @@ class Trainer(object):
 
                 if key=='rgb':  # rgb
                     imgs_render[key] = imgs_render[key].reshape([H, W, 3])
-                    img_tmp=imgs_render[key]*255
+                    img_tmp=imgs_render[key][...,::-1]*255
 
                 elif key=='depth':  # depth
                     imgs_render[key] = imgs_render[key].reshape([H, W])
@@ -195,6 +254,12 @@ class Trainer(object):
                     img_tmp=semantic_fine
                     vis_label=colour_map_np[(semantic_fine).astype(np.uint8)]
                     cv2.imwrite(f'{cfg.result_dir}/{key}/{iteration}_vis.png', vis_label[...,::-1])
+                
+                elif key=='volume_normals' or key=='surface_normals':
+                    normals = imgs_render[key].reshape([H, W, 3])
+                    norm_normals = np.linalg.norm(normals, axis=-1, ord=2,keepdims=True)
+                    img_tmp = (((normals/norm_normals + 1) * 0.5).clip(0,1) * 255).astype(np.uint8)
+                    img_tmp = img_tmp[...,::-1]
 
                 cv2.imwrite(f'{cfg.result_dir}/{key}/{iteration}.png', img_tmp)
  

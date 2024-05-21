@@ -27,20 +27,17 @@ def load_point_vis(path, masks):
                 masks[idx][v, u] = 1
 
 
-for scene_id in ['0580_00']:
-    # source = f'/home/du/Proj/data/ScanNet/scene{scene_id}/'  # TODO: modify this to your path
-    source = f'/home/du/Proj/data/ScanNet/scene{scene_id}/GT/'
+for scene_id in ['0050_00', '0084_00', '0616_00', \
+                 '0435_02', '0426_00', '0025_00', '0169_00']:
+    source = f'/home/du/Proj/Dataset/ScanNet/scans/scene{scene_id}/' # TODO: modify this to your path
     target = f'../data/scannet/{scene_id}'
 
-    # os.makedirs(f'{target}/images', exist_ok=True)
-    # os.makedirs(f'{target}/pose', exist_ok=True)
-    # os.makedirs(f'{target}/depth_patchmatch', exist_ok=True)
+    os.makedirs(f'{target}/images', exist_ok=True)
+    os.makedirs(f'{target}/pose', exist_ok=True)
+    os.makedirs(f'{target}/depth_patchmatch', exist_ok=True)
 
     id_list = os.listdir(os.path.join(source + 'color'))
-    # id_list = os.listdir(source+'images')
     id_list = [id[:-4] for id in id_list if id.endswith('0.jpg')]
-    # id_list = [id[:-4] for id in id_list ]
-    # id.sort(key=lambda _:int(_[:-4]))
     id_list.sort(key=lambda _:int(_))
 
     pose_dict = dict()
@@ -69,15 +66,15 @@ for scene_id in ['0580_00']:
     with open(f'{target}/scale.txt', 'w') as f:
         f.write(f'{scale}')
 
-    # os.system(f'cp {source}/intrinsic/intrinsic_depth.txt {target}/intrinsic.txt')
+    os.system(f'cp {source}/intrinsic/intrinsic_depth.txt {target}/intrinsic.txt')
 
     for id in tqdm(id_list):
-        # color = cv2.imread(f'{source}/color/{id}.jpg')
-        # color = cv2.resize(color, (width, height))
-        # cv2.imwrite(f'{target}/images/{id}.png', color)
+        color = cv2.imread(f'{source}/color/{id}.jpg')
+        color = cv2.resize(color, (width, height))
+        cv2.imwrite(f'{target}/images/{id}.png', color)
         np.savetxt(f'{target}/pose/{id}.txt', pose_dict[id])
 
-    colmap_bin = '/home/guohaoyu/repos/NerfingMVS/colmap/build/src/exe/colmap'  # TODO: modify this to your path
+    colmap_bin = '/home/du/Proj/3Dv_Reconstruction/NerfingMVS/colmap/build/src/exe/colmap'  # TODO: modify this to your path
 
     data_list = []
     for i, id in enumerate(id_list):

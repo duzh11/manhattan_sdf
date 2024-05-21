@@ -1,5 +1,5 @@
 task: manhattan_sdf
-exp_name: 'test1_0580'
+exp_name: Mask2Formera40detach_0378
 gpus: [0]
 
 train_dataset_module: lib.datasets.scannet
@@ -8,11 +8,7 @@ network_module: lib.networks.network
 trainer_module: lib.train.trainers.manhattan_sdf
 evaluator_module: lib.evaluators.mesh
 
-output_mesh: 'scene0580_00.ply'
-# record_dir: '/raid/duzhenhua/Manhattan_sdf/exp/record'
-# result_dir: '/raid/duzhenhua/Manhattan_sdf/exp/result'
-# trained_model_dir: '/raid/duzhenhua/Manhattan_sdf/exp/trained_model'
-# trained_config_dir: '/raid/duzhenhua/Manhattan_sdf/exp/trained_config'
+output_mesh: 'scene0378_00.ply'
 record_dir: '../exp/record'
 result_dir: '../exp/result'
 trained_model_dir: '../exp/trained_model'
@@ -36,7 +32,7 @@ model:
         fr_view: -1
         weight_norm: True
     semantic:
-        semantic_class: 3
+        semantic_class: 40
         net_depth: 4
         skips: []
         fr_pos: -1
@@ -46,33 +42,32 @@ model:
     speed_factor: 10.0
 
 train_dataset:
-    data_root: '/raid/duzhenhua/Manhattan_sdf/data/scannet'
+    data_root: '../data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'train'
-    scene: '0580_00'
+    scene: '0378_00'
     near: 0.0
     far: 2.0
 
 test_dataset:
-    data_root: '/raid/duzhenhua/Manhattan_sdf/data/scannet'
+    data_root: '../data/scannet' #'/raid/duzhenhua/Manhattan_sdf/data/scannet'
     split: 'test'
-    scene: '0580_00'
+    scene: '0378_00'
     near: 0.0
     far: 2.0
-    scale: 0.61330
-    offset: [2.2127205,1.766936,2.014595 ]
-    #[1.77986, 1.75840, 2.41183]
-
+    scale: 0.79774
+    offset: [2.46681, 1.98403, 1.44768]
+ 
 sample:
     N_samples: 128
     N_importance: 64
-    rayschunk: 65536
-    netchunk: 1048576
+    rayschunk: 65536 #65536
+    netchunk: 1048576 #1048576
     max_upsample_steps: 6
     max_bisection_steps: 10
     epsilon: 0.1
   
 train:
-    N_rays: 512
+    N_rays: 512 #1024
     batch_size: 1
     lr: 0.0005
     weight_decay: 0.
@@ -95,11 +90,11 @@ loss:
     ce_weight: 1.0
     ce_weight_decay: 0.5
     ce_weight_decay_epochs: [1, 5]
-    non_plane_weight: 0.2
+    non_plane_weight: 1.0
     eikonal_weight: 0.1
 
 ep_iter: 1000
-save_ep: 1
-eval_ep: 1
-save_latest_ep: 1
+save_ep: 5
+eval_ep: 5
+save_latest_ep: 5
 log_interval: 1

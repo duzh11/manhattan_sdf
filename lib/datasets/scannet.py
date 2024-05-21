@@ -92,12 +92,12 @@ class Dataset(torch.utils.data.Dataset):
                 # semantic_deeplab[bg_mask] = 0
                 # self.semantic_deeplab.append(semantic_deeplab)
 
-                semantic_deeplab = cv2.imread(f'{self.instance_dir}/semantic_pred/{imgname[:-4]}.png', -1)
+                semantic_deeplab = cv2.imread(f'{self.instance_dir}/deeplab/{int(imgname[:-4]):04d}.png', -1)
                 semantic_seg=semantic_deeplab.copy()
                 if semantic_class==40:
-                    label_mapping_nyu=mapping_nyu40(manhattan=True)
+                    label_mapping_nyu=mapping_nyu40(manhattan=False)
                 elif semantic_class==3:
-                    label_mapping_nyu=mapping_nyu3(manhattan=True)
+                    label_mapping_nyu=mapping_nyu3(manhattan=False)
                 for scan_id, nyu_id in label_mapping_nyu.items():
                     semantic_seg[semantic_deeplab==scan_id] = nyu_id
                 

@@ -296,8 +296,13 @@ class SemanticNet(nn.Module):
             if l != self.D:
                 layer = DenseLayer(in_dim, out_dim, activation=nn.ReLU(inplace=True))
             else:
-                layer = nn.Linear(in_dim, out_dim)
-                #DenseLayer(in_dim, out_dim, activation=nn.Sigmoid())
+                 #todo
+                if cfg.model.semantic.semantic_class==40:
+                    layer = nn.Linear(in_dim, out_dim)
+                elif cfg.model.semantic.semantic_class==3:
+                    layer = DenseLayer(in_dim, out_dim, activation=nn.Sigmoid()) 
+                else:
+                    layer = nn.Linear(in_dim, out_dim)
             
             if cfg.model.semantic.weight_norm:
                 layer = nn.utils.weight_norm(layer)
