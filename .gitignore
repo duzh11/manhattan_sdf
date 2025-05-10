@@ -1,3 +1,6 @@
 __pycache__/
 /data/
 *.pth
+Data/
+evaluation/
+exps/

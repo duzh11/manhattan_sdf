@@ -30,7 +30,7 @@ def load_point_vis(path, masks):
 for scene_id in ['0050_00', '0084_00', '0616_00', \
                  '0435_02', '0426_00', '0025_00', '0169_00']:
     source = f'/home/du/Proj/Dataset/ScanNet/scans/scene{scene_id}/' # TODO: modify this to your path
-    target = f'../data/scannet/{scene_id}'
+    target = f'./Data/scannet_MOSE/{scene_id}'
 
     os.makedirs(f'{target}/images', exist_ok=True)
     os.makedirs(f'{target}/pose', exist_ok=True)

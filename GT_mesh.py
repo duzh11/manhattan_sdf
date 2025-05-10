@@ -7,7 +7,7 @@ from lib.utils.mesh_utils import extract_mesh, refuse, transform
 import open3d as o3d
 
 data_loader = make_data_loader(cfg, is_train=False)
-base_dir='../evaluation/neuris/'
+base_dir='./evaluation/neuris/'
 scene_name='scene0616_00.ply'
 output_mesh='scene0616_refuse.ply'
 

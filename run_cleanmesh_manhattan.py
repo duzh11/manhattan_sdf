@@ -11,7 +11,7 @@ method_name_lis = ['deeplab3sigmoid', 'deeplab40retrain', 'deeplab40detach', \
                    'Mask2Formera3sigmoid', 'Mask2Formera40retrain', 'Mask2Formera40detach']
 class_lis=[3, 40, 40, 3, 40, 40]
 
-exp_dir = '../exp/result'
+exp_dir = './exps/result'
 
 i=0
 for method_name in method_name_lis:

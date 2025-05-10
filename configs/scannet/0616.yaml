@@ -9,10 +9,10 @@ trainer_module: lib.train.trainers.manhattan_sdf
 evaluator_module: lib.evaluators.mesh
 
 output_mesh: 'scene0616_00.ply'
-record_dir: '../exp/record'
-result_dir: '../exp/result'
-trained_model_dir: '../exp/trained_model'
-trained_config_dir: '../exp/trained_config'
+record_dir: './exps/record'
+result_dir: './exps/result'
+trained_model_dir: './exps/trained_model'
+trained_config_dir: './exps/trained_config'
 
 model:
     net_width: 256
@@ -42,14 +42,14 @@ model:
     speed_factor: 10.0
 
 train_dataset:
-    data_root: '../data/scannet'
+    data_root: './Data/scannet_MOSE'
     split: 'train'
     scene: '0616_00'
     near: 0.0
     far: 2.0
 
 test_dataset:
-    data_root: '../data/scannet'
+    data_root: './Data/scannet_MOSE'
     split: 'test'
     scene: '0616_00'
     near: 0.0
