@@ -78,20 +78,6 @@ def run_evaluate():
     save_result(evaluate_result,file_dir)
     print('save result to '+file_dir)
 
-def run_render():
-    from lib.datasets import make_data_loader
-    from lib.networks import make_network
-    from lib.utils.net_utils import load_network
-    network = make_network(cfg).cuda()
-    load_network(
-        network,
-        cfg.trained_model_dir,
-        resume=cfg.resume,
-        epoch=cfg.test.epoch
-    )
-    network.eval()
-    data_loader = make_data_loader(cfg, is_train=False)
-
 if __name__ == '__main__':
     args.type='mesh_extract'
     globals()['run_' + args.type]()
